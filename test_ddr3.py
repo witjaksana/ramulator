@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import random
 import sys
@@ -116,14 +116,14 @@ def main(n_reqs, rw, rec):
   for f in tmps.itervalues():
     f.file.seek(0)
   traces.append(tmps)
-  print 'Random trace created'
+  print('Random trace created')
 
   tmps = {name: tempfile.NamedTemporaryFile(prefix='stream-') for name in trace_names}
   gen_stream(make_cb(tmps), n_reqs, rw)
   for f in tmps.itervalues():
     f.file.seek(0)
   traces.append(tmps)
-  print 'Stream trace created'
+  print('Stream trace created')
 
   if rec:
       for name, tmpf in traces[0].iteritems():
@@ -142,29 +142,29 @@ def main(n_reqs, rw, rec):
     for sim in sims:
       tmp = tempfile.NamedTemporaryFile()
       p = subprocess.Popen(sim.argv(v[sim.trace].name), stdout=tmp.file, stderr=blackhole)
-      print 'Starting %s %d' % (sim.name, p.pid)
+      print('Starting %s %d' % (sim.name, p.pid))
       proc = psutil.Process(p.pid)
       t, mem = 0, 0
       while p.poll() is None:
         try:
           mem = max(mem, proc.memory_info()[0]) # RSS on mac
           t = sum(proc.cpu_times())
-        except: print "======== Oops monitoring %s %d failed ===============" % (sim.name, p.pid)
+        except: print("======== Oops monitoring %s %d failed ===============" % (sim.name, p.pid))
         time.sleep(0.1)
-      print '%s(%d) finished.' % (sim.name, p.pid)
+      print('%s(%d) finished.' % (sim.name, p.pid))
       clk = sim.parse_clk(tmp.file)
       res_dict[sim.name] = {'Trace': v[sim.trace].name, 'SimulatedDRAMCycles': clk, 'Runtime (s)': "{:.2f}".format(t), 'MemoryUsage (MB)': "{:.2f}".format(float(mem)/2**20)}
       tmp.file.close()
     results.append(res_dict)
   blackhole.close()
 
-  print "\n=== Simulation Results ==="
+  print("\n=== Simulation Results ===")
   for r in results:
-    print r
+    print(r)
 
 
 if __name__ == '__main__':
-  if len(sys.argv) < 3: print 'test_ddr3.py <n-requests> <read proportion> [record]'
+  if len(sys.argv) < 3: print('test_ddr3.py <n-requests> <read proportion> [record]')
   else: main(int(sys.argv[1]), float(sys.argv[2]), (len(sys.argv) > 3 and sys.argv[3] == 'record'))
 
 

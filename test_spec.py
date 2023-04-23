@@ -1,15 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
 import subprocess
-import Queue
-import thread
+import queue
+import _thread
 
 def wait(p, q, desc):
   try: p.wait()
   finally: q.put((desc, p.pid))
 
 def main():
-  pids = Queue.Queue()
+  pids = queue.Queue()
   try: os.mkdir('results/')
   except: pass
   cnt = 0
@@ -18,13 +18,13 @@ def main():
     of = open('results/'+fn, 'w')
     fn = 'cputraces/'+fn
     p = subprocess.Popen(["./ramulator-cputrace", fn], stdout=of)
-    thread.start_new_thread(wait, (p, pids, fn))
+    _thread.start_new_thread(wait, (p, pids, fn))
     cnt += 1
-    print "spawned %s: %d (%d)" % (fn, p.pid, cnt)
+    print("spawned %s: %d (%d)" % (fn, p.pid, cnt))
 
   while cnt:
     desc, p = pids.get()
-    print desc, p, "finished"
+    print(desc, p, "finished")
     cnt -= 1
 
 
